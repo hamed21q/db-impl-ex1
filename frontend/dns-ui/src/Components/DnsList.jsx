@@ -26,7 +26,7 @@ function DnsList() {
 
   const fetchData = () => {
     const params = {
-      page: page + 1, // Adjusted page number (1-indexed instead of 0-indexed)
+      page: page, // Adjusted page number (1-indexed instead of 0-indexed)
       size: rowsPerPage,
       search: searchQuery
     };
