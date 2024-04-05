@@ -24,7 +24,5 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment:
-      - HOST_IP_ADDRESS=http://backend:80
     ports:
-      - "80:80"
+      - "7001:80"
