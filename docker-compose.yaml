@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.2'
 
 services:
   backend:
@@ -8,13 +8,15 @@ services:
     environment:
       - MONGO_HOST=192.168.120.113
       - MONGO_PORT=27017
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=1qaz
     ports:
       - "8000:80"
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    environment:
-      - REACT_APP_API_URL=http://backend:8000
-    ports:
-      - "3000:3000"
+#  frontend:
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    environment:
+#      - REACT_APP_API_URL=http://backend:8000
+#    ports:
+#      - "3000:3000"
