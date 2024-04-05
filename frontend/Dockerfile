@@ -1,12 +1,10 @@
-FROM node:14-alpine
+FROM node:latest
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY dns-ui .
 
 RUN npm install
-
-COPY . .
 
 RUN npm run build
 

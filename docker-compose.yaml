@@ -1,22 +1,30 @@
 version: '3.2'
 
 services:
+  mongo:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=1qaz
+    ports:
+      - "27017:27017"
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      - MONGO_HOST=192.168.120.113
+      - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_USERNAME=root
       - MONGO_PASSWORD=1qaz
     ports:
-      - "8000:80"
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    environment:
-#      - REACT_APP_API_URL=http://backend:8000
-#    ports:
-#      - "3000:3000"
+      - "7000:80"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    ports:
+      - "3000:3000"
