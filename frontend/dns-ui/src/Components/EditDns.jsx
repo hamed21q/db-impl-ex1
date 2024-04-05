@@ -32,7 +32,7 @@ const EditDns = ({ open, onClose, id }) => {
     };
 
     // Send a PUT request to update the data
-    axios.put(`/api/dns/${id}`, updatedData)
+    axios.put(`http://localhost:8082/dns/${id}`, updatedData)
       .then(response => {
         console.log('Data updated successfully:', response.data);
         onClose(); // Close the modal after saving

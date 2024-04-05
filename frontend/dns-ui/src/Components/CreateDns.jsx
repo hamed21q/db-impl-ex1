@@ -29,7 +29,7 @@ const CreateDns = ({ open, onClose, id }) => {
       domain: domain
     };
 
-    axios.post("/api/dns", createdData)
+    axios.post("http://localhost:8082/dns", createdData)
       .then(response => {
         resetFields();
         onClose();

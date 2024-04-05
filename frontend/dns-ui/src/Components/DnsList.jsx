@@ -37,7 +37,7 @@ function DnsList() {
       search: searchQuery
     };
 
-    axios.get("/api/dns", { params })
+    axios.get("http://localhost:8082/dns", { params })
       .then(response => {
         setData(response.data.dnses.map(item => ({ ...item, id: item._id })));
         setTotalRows(response.data.total_count);
