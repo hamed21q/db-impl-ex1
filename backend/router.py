@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from pymongo.errors import DuplicateKeyError
@@ -23,6 +25,7 @@ async def read_dns(dns_id: str):
     async for dns in cursor:
         dns["_id"] = str(dns["_id"])
         return dns
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
 
 @router.get("/dns")
@@ -43,6 +46,16 @@ async def get_list_of_dns(page: int = 0, size: int = 10, search: str = None):
         {"domain": {"$regex": f".*{search}.*"}} if search else {}
     )
     return {"dnses": dnses, "total_count": count}
+
+
+@router.get("/is_exists")
+async def is_exists(domain_name: str):
+    cursor = collection.find({"domain": domain_name})
+    async for dns in cursor:
+        dns["_id"] = str(dns["_id"])
+        return dns
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+
 
 
 @router.put("/dns/{dns_id}")
