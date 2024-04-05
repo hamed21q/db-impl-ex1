@@ -15,7 +15,7 @@ const DeleteDns = ({ open, onClose, id }) => {
   const handleSave = () => {
 
     // Send a PUT request to update the data
-    axios.delete(`http://localhost:8082/dns/${id}`)
+    axios.delete(`${process.env.HOST_IP_ADDRESS}/${id}`)
       .then(response => {
         console.log('Data updated successfully:', response.data);
         onClose(); // Close the modal after saving
