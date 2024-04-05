@@ -8,6 +8,6 @@ RUN npm install
 
 RUN npm run build
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
+FROM nginx
+COPY --from=ui-builder /app/dns-ui/build /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
