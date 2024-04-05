@@ -1,14 +1,18 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class CreateDnsCommand(BaseModel):
-    domain: str = Field(
-        pattern="^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]+)+)(?:\/.*)?$",
-        examples=["www.ali.gov", "http://www.hossein.com", "https://reza.ir"],
-    )
-    ip: str = Field(
-        pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$", examples=["192.168.120.548"]
-    )
+    domain: str
+    ip: str
+    updated_at: Optional[datetime] = datetime.utcnow()
+
+    def model_dump(self, *args, **kwargs):
+        model = super().model_dump(*args, **kwargs)
+        model['updated_at'] = int(datetime.utcnow().timestamp())
+        return model
 
 
 class DnsViewModel(BaseModel):

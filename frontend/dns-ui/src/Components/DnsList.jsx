@@ -9,9 +9,12 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import Dns from "./Dns";
+import EditDns from "./EditDns";
+import DeleteDns from "./DeleteDns";
+import CreateDns from "./CreateDns";
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 
 function DnsList() {
   const [data, setData] = useState([]);
@@ -19,10 +22,13 @@ function DnsList() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalRows, setTotalRows] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editModalStatus, setEditModalStatus] = useState({state: false, id: null});
+  const [deleteModalStatus, setDeleteModalStatus] = useState({state: false, id: null});
+  const [createModalStatus, setCreateModalStatus] = useState(false);
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, searchQuery]);
+  }, [page, rowsPerPage, searchQuery, editModalStatus, deleteModalStatus, createModalStatus]);
 
   const fetchData = () => {
     const params = {
@@ -55,6 +61,32 @@ function DnsList() {
     setPage(0); // Reset to the first page when performing a search
   };
 
+  const onDelete = (id) => {
+    console.log(`Delete row with id ${id}`);
+    setDeleteModalStatus({state: true, id: id}); // Open the edit modal
+  };
+
+  const onEdit = (id) => {
+    console.log(`Edit row with id ${id}`);
+    setEditModalStatus({state: true, id: id}); // Open the edit modal
+  };
+
+  const onCreate = () => {
+    setCreateModalStatus(true)
+  }
+
+  const handleCloseEditModal = () => {
+    setEditModalStatus({state: false, id: null});
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalStatus({state: false, id: null});
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateModalStatus(false);
+  };
+
   return (
     <div>
       <TextField
@@ -64,34 +96,33 @@ function DnsList() {
         onChange={handleSearchChange}
         style={{ margin: '1rem' }}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<AddIcon />}
+        onClick={onCreate}
+        style={{ margin: '1.5rem' }}
+      >
+        Create
+      </Button>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell align="center">id</TableCell>
-              <TableCell align="center">domain</TableCell>
               <TableCell align="center">ip</TableCell>
+              <TableCell align="center">domain</TableCell>
               <TableCell align="center">operations</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell align="center">{row.id}</TableCell>
-                <TableCell align="center">{row.ip}</TableCell>
-                <TableCell align="center">{row.domain}</TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary">
-                    <DeleteIcon />
-                  </IconButton>
-                  <IconButton color="primary">
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+              <Dns
+              key={row.id}
+              row={row}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
             ))}
           </TableBody>
         </Table>
@@ -105,6 +136,9 @@ function DnsList() {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <EditDns open={editModalStatus.state} onClose={handleCloseEditModal} id={editModalStatus.id} />
+      <DeleteDns open={deleteModalStatus.state} onClose={handleCloseDeleteModal} id={deleteModalStatus.id} />
+      <CreateDns open={createModalStatus} onClose={handleCloseCreateModal}/>
     </div>
   );
 }
