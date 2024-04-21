@@ -112,6 +112,7 @@ function DnsList() {
               <TableCell align="center">id</TableCell>
               <TableCell align="center">ip</TableCell>
               <TableCell align="center">domain</TableCell>
+              <TableCell align="center">business type</TableCell>
               <TableCell align="center">operations</TableCell>
             </TableRow>
           </TableHead>

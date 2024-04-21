@@ -11,6 +11,7 @@ const Dns = ({ row, onDelete, onEdit }) => {
       <TableCell align="center">{row.id}</TableCell>
       <TableCell align="center">{row.ip}</TableCell>
       <TableCell align="center">{row.domain}</TableCell>
+      <TableCell align="center">{row.business_type}</TableCell>
       <TableCell align="center">
         <IconButton color="primary" onClick={() => onDelete(row.id)}>
           <DeleteIcon />

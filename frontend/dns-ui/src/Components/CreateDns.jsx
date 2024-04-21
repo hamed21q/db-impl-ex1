@@ -5,28 +5,33 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
 
 const CreateDns = ({ open, onClose, id }) => {
   const [ip, setIp] = useState('');
   const [domain, setDomain] = useState('');
-  const [domainError, setDomainError] = useState({state: false, message: ""});
+  const [domainError, setDomainError] = useState({ state: false, message: "" });
+  const [businessType, setBusinessType] = useState('');
 
   const resetFields = () => {
     setIp('');
     setDomain('');
-    setDomainError({state: false, message: ""});
+    setDomainError({ state: false, message: "" });
+    setBusinessType('');
   };
 
   const handleSave = () => {
     if (!validateDomain(domain)) {
-      setDomainError({state: true, message: 'example: www.ali.com'});
+      setDomainError({ state: true, message: 'example: www.ali.com' });
       return;
     }
 
     const createdData = {
       ip: ip,
-      domain: domain
+      domain: domain,
+      business_type: businessType
     };
 
     axios.post("http://localhost:8082/dns", createdData)
@@ -35,8 +40,8 @@ const CreateDns = ({ open, onClose, id }) => {
         onClose();
       })
       .catch(error => {
-        if (error.response.status === 409){
-         setDomainError({state: true, message: "domain already taken"})
+        if (error.response.status === 409) {
+          setDomainError({ state: true, message: "domain already taken" })
         }
       });
   };
@@ -54,7 +59,11 @@ const CreateDns = ({ open, onClose, id }) => {
   const handleDomainInput = (event) => {
     const { value } = event.target;
     setDomain(value);
-    setDomainError({state: !validateDomain(value), message: "example: www.ali.com"});
+    setDomainError({ state: !validateDomain(value), message: "example: www.ali.com" });
+  };
+
+  const handleBusinessTypeChange = (event) => {
+    setBusinessType(event.target.value);
   };
 
   return (
@@ -71,7 +80,7 @@ const CreateDns = ({ open, onClose, id }) => {
           fullWidth
         />
         <TextField
-          error={domainError}
+          error={domainError.state}
           helperText={domainError.state ? domainError.message : ''}
           margin="dense"
           label="Domain"
@@ -83,6 +92,24 @@ const CreateDns = ({ open, onClose, id }) => {
             pattern: "^www\\.[A-Za-z0-9]+\\.[A-Za-z0-9]+$"
           }}
         />
+        <Select
+          value={businessType}
+          onChange={handleBusinessTypeChange}
+          displayEmpty
+          fullWidth
+          margin="dense"
+          label="Business Type"
+        >
+          <MenuItem value="" disabled>
+            Select Business Type
+          </MenuItem>
+          <MenuItem value="news">News</MenuItem>
+          <MenuItem value="ecommerce">E-commerce</MenuItem>
+          <MenuItem value="education">Education</MenuItem>
+          <MenuItem value="government">Government</MenuItem>
+          <MenuItem value="social">Social</MenuItem>
+          <MenuItem value="others">Others</MenuItem>
+        </Select>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleSave} color="primary">

@@ -33,19 +33,19 @@ async def get_list_of_dns(page: int = 0, size: int = 10, search: str = None):
     cursor = (
         collection.find({"domain": {"$regex": f".*{search}.*"}} if search else {})
         .sort("updated_at", -1)
-        .skip((page) * size)
+        .skip(page * size)
         .limit(size)
     )
 
-    dnses = []
+    dns_list = []
     async for dns in cursor:
         dns["_id"] = str(dns["_id"])
-        dnses.append(dns)
+        dns_list.append(dns)
 
     count = await collection.count_documents(
         {"domain": {"$regex": f".*{search}.*"}} if search else {}
     )
-    return {"dnses": dnses, "total_count": count}
+    return {"dnses": dns_list, "total_count": count}
 
 
 @router.get("/is_exists")
@@ -55,7 +55,6 @@ async def is_exists(domain_name: str):
         dns["_id"] = str(dns["_id"])
         return dns
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-
 
 
 @router.put("/dns/{dns_id}")
