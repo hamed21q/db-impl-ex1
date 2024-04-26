@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Chart from 'chart.js/auto';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,6 +16,11 @@ import DeleteDns from "./DeleteDns";
 import CreateDns from "./CreateDns";
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import BusinessStat from "./BusinessStat";
+import CountryStat from "./CountryStat";
+import OwnerStat from "./OwnerStat";
+import DomainStat from "./DomainStat";
+import AccessStat from "./AccessStat";
 
 function DnsList() {
   const [data, setData] = useState([]);
@@ -25,9 +31,65 @@ function DnsList() {
   const [editModalStatus, setEditModalStatus] = useState({state: false, id: null});
   const [deleteModalStatus, setDeleteModalStatus] = useState({state: false, id: null});
   const [createModalStatus, setCreateModalStatus] = useState(false);
+  const [countryStat, setCountryStat] = useState([]);
+  const [businessStat, setBusinessStat] = useState([]);
+  const [ownerStat, setOwnerStat] = useState([]);
+  const [domainStat, setDomainStat] = useState([]);
+  const [accessStat, setAccessStat] = useState([]);
+
+  const fetchCountryStat = () => {
+    axios.get(`http://localhost:8082/stat/country`)
+      .then(response => {
+        setCountryStat(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+  const fetchAccessStat = () => {
+    axios.get(`http://localhost:8082/stat/access`)
+      .then(response => {
+        setAccessStat(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+  const fetchOwnerStat = () => {
+    axios.get(`http://localhost:8082/stat/owner`)
+      .then(response => {
+        setOwnerStat(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+    const fetchDomainStat = () => {
+    axios.get(`http://localhost:8082/stat/domain`)
+      .then(response => {
+        setDomainStat(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+  const fetchBusinessStat = () => {
+    axios.get(`http://localhost:8082/stat/business`)
+      .then(response => {
+        setBusinessStat(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
 
   useEffect(() => {
     fetchData();
+    fetchBusinessStat();
+    fetchOwnerStat();
+    fetchCountryStat();
+    fetchDomainStat();
+    fetchAccessStat();
   }, [page, rowsPerPage, searchQuery, editModalStatus, deleteModalStatus, createModalStatus]);
 
   const fetchData = () => {
@@ -109,10 +171,11 @@ function DnsList() {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">id</TableCell>
               <TableCell align="center">ip</TableCell>
               <TableCell align="center">domain</TableCell>
               <TableCell align="center">business type</TableCell>
+              <TableCell align="center">country</TableCell>
+              <TableCell align="center">owner</TableCell>
               <TableCell align="center">operations</TableCell>
             </TableRow>
           </TableHead>
@@ -140,6 +203,16 @@ function DnsList() {
       <EditDns open={editModalStatus.state} onClose={handleCloseEditModal} id={editModalStatus.id} />
       <DeleteDns open={deleteModalStatus.state} onClose={handleCloseDeleteModal} id={deleteModalStatus.id} />
       <CreateDns open={createModalStatus} onClose={handleCloseCreateModal}/>
+      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <BusinessStat stats={businessStat} />
+        <CountryStat stats={countryStat}/>
+      </div>
+        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+          <OwnerStat stats={ownerStat} />
+          <DomainStat stats={domainStat} />
+        </div>
+      <AccessStat stats={accessStat}/>
+
     </div>
   );
 }

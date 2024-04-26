@@ -8,20 +8,43 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
+import {Autocomplete} from "@mui/material";
 
 const EditDns = ({ open, onClose, id }) => {
   const [ip, setIp] = useState('');
   const [domain, setDomain] = useState('');
   const [businessType, setBusinessType] = useState('');
+  const [countries, setCountries] = useState([]);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [owner, setOwner] = useState('');
+
+  const fetchCountries = (search) => {
+    axios.get(`http://localhost:8082/country?search=${search === null ? "" : search}`)
+      .then(response => {
+        setCountries(response.data.countries);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+
+  const handleCountrySearchChange = (event) => {
+    setCountrySearch((event.target.value))
+    fetchCountries(countrySearch);
+  }
 
   useEffect(() => {
     if (open) {
+      fetchCountries('')
       axios.get(`http://localhost:8082/dns/${id}`)
         .then(response => {
           // Set the initial values in the state
           setIp(response.data.ip);
           setDomain(response.data.domain);
           setBusinessType(response.data.business_type);
+          setSelectedCountry(response.data.country)
+          setOwner(response.data.owner)
         })
         .catch(error => {
           console.error('Error fetching current values:', error);
@@ -33,7 +56,9 @@ const EditDns = ({ open, onClose, id }) => {
     const updatedData = {
       ip: ip,
       domain: domain,
-      business_type: businessType
+      country: selectedCountry,
+      business_type: businessType,
+      owner: owner
     };
 
     // Send a PUT request to update the data
@@ -75,6 +100,15 @@ const EditDns = ({ open, onClose, id }) => {
           fullWidth
         />
         <TextField
+          autoFocus
+          margin="dense"
+          label="Owner"
+          type="text"
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
+          fullWidth
+        />
+        <TextField
           margin="dense"
           label="Domain"
           type="text"
@@ -82,6 +116,16 @@ const EditDns = ({ open, onClose, id }) => {
           onChange={(e) => setDomain(e.target.value)}
           fullWidth
         />
+      <Autocomplete
+        options={countries}
+        margin="dense"
+        getOptionLabel={(option) => option.name}
+        onChange={(event, value) => setSelectedCountry(value['name'])}
+        onInputChange={handleCountrySearchChange}
+        renderInput={(params) => (
+          <TextField {...params} label="Select Country" variant="outlined" />
+        )}
+      />
         <Select
           value={businessType}
           onChange={(e) => setBusinessType(e.target.value)}

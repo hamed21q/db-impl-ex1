@@ -8,10 +8,12 @@ import EditIcon from '@mui/icons-material/Edit';
 const Dns = ({ row, onDelete, onEdit }) => {
   return (
     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-      <TableCell align="center">{row.id}</TableCell>
+      {/*<TableCell align="center">{row.id}</TableCell>*/}
       <TableCell align="center">{row.ip}</TableCell>
       <TableCell align="center">{row.domain}</TableCell>
       <TableCell align="center">{row.business_type}</TableCell>
+      <TableCell align="center">{row.country}</TableCell>
+      <TableCell align="center">{row.owner}</TableCell>
       <TableCell align="center">
         <IconButton color="primary" onClick={() => onDelete(row.id)}>
           <DeleteIcon />

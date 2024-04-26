@@ -11,6 +11,7 @@ MONGO_URL = "mongodb://{}:{}@{}:{}".format(
 client = AsyncIOMotorClient(MONGO_URL)
 database = client["db_imp"]
 collection = database["dns"]
+countries = database["countries"]
 
 collection.create_index("ip", unique=True)
 collection.create_index("domain", unique=True)

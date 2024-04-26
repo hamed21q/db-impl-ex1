@@ -8,30 +8,54 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
+import {Autocomplete} from "@mui/material";
 
 const CreateDns = ({ open, onClose, id }) => {
   const [ip, setIp] = useState('');
   const [domain, setDomain] = useState('');
   const [domainError, setDomainError] = useState({ state: false, message: "" });
   const [businessType, setBusinessType] = useState('');
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [owner, setOwner] = useState('');
+  const [countrySearch, setCountrySearch] = useState('');
+
+  const fetchCountries = (search) => {
+    axios.get(`http://localhost:8082/country?search=${search}`)
+      .then(response => {
+        setCountries(response.data.countries);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  };
+
+    useEffect(() => {
+    if (open){
+      fetchCountries("")
+    }
+  }, [open]);
 
   const resetFields = () => {
     setIp('');
     setDomain('');
     setDomainError({ state: false, message: "" });
     setBusinessType('');
+    setSelectedCountry('');
   };
 
   const handleSave = () => {
     if (!validateDomain(domain)) {
-      setDomainError({ state: true, message: 'example: www.ali.com' });
+      setDomainError({ state: true, message: 'Example: www.ali.com' });
       return;
     }
 
     const createdData = {
       ip: ip,
       domain: domain,
-      business_type: businessType
+      owner: owner,
+      business_type: businessType,
+      country: selectedCountry // Include selected country in the request payload
     };
 
     axios.post("http://localhost:8082/dns", createdData)
@@ -41,7 +65,7 @@ const CreateDns = ({ open, onClose, id }) => {
       })
       .catch(error => {
         if (error.response.status === 409) {
-          setDomainError({ state: true, message: "domain already taken" })
+          setDomainError({ state: true, message: "Domain already taken" });
         }
       });
   };
@@ -53,22 +77,27 @@ const CreateDns = ({ open, onClose, id }) => {
 
   const validateDomain = (domain) => {
     const domainRegex = /^www\.[A-Za-z0-9]+\.[A-Za-z0-9]+$/;
-    return domainRegex.test(domain)
+    return domainRegex.test(domain);
   };
 
   const handleDomainInput = (event) => {
     const { value } = event.target;
     setDomain(value);
-    setDomainError({ state: !validateDomain(value), message: "example: www.ali.com" });
+    setDomainError({ state: !validateDomain(value), message: "Example: www.ali.com" });
   };
 
   const handleBusinessTypeChange = (event) => {
     setBusinessType(event.target.value);
   };
 
-  return (
+  const handleCountrySearchChange = (event) => {
+    setCountrySearch((event.target.value))
+    fetchCountries(countrySearch);
+  }
+
+ return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Create Dns</DialogTitle>
+      <DialogTitle>Create DNS</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -77,6 +106,15 @@ const CreateDns = ({ open, onClose, id }) => {
           type="text"
           value={ip}
           onChange={(e) => setIp(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Owner"
+          type="text"
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
           fullWidth
         />
         <TextField
@@ -94,6 +132,7 @@ const CreateDns = ({ open, onClose, id }) => {
         />
         <Select
           value={businessType}
+          margin="dense"
           onChange={handleBusinessTypeChange}
           displayEmpty
           fullWidth
@@ -110,6 +149,16 @@ const CreateDns = ({ open, onClose, id }) => {
           <MenuItem value="social">Social</MenuItem>
           <MenuItem value="others">Others</MenuItem>
         </Select>
+    <Autocomplete
+      options={countries}
+      margin="dense"
+      getOptionLabel={(option) => option.name}
+      onChange={(event, value) => setSelectedCountry(value.name)}
+      onInputChange={handleCountrySearchChange}
+      renderInput={(params) => (
+        <TextField {...params} label="Select Country" variant="outlined" />
+      )}
+    />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleSave} color="primary">
